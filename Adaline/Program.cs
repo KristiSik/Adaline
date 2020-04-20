@@ -37,8 +37,6 @@ namespace Adaline
                 Log.Error(ex, "Failed to read input data.");
                 return;
             }
-
-            Models.Adaline adaline = new Models.Adaline(inputData, learningRate);
         }
 
         private static void ConfigureLogger()

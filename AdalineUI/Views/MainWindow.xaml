@@ -1,0 +1,97 @@
+﻿<controls:MetroWindow x:Class="AdalineUI.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+        mc:Ignorable="d"
+        Title="Adaline" Height="450" Width="800" MinWidth="750" MinHeight="450" >
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="240" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Column="0" Margin="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBox IsReadOnly="True" Style="{DynamicResource MahApps.Styles.TextBox.Button}" Grid.Column="0" Text="{Binding SourceFilePath}"
+                         controls:TextBoxHelper.ButtonCommand="{Binding SelectFileCommand}">
+                    <controls:TextBoxHelper.ButtonContent>
+                        <Image Source="../Images/folder.png" Margin="3" />
+                    </controls:TextBoxHelper.ButtonContent>
+                </TextBox>
+            </Grid>
+            <ItemsControl Grid.Row="1" ItemsSource="{Binding ColumnNames}" Margin="0 10 0 0">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <RadioButton GroupName="ResultColumn" IsChecked="{Binding IsResult}" 
+                                         Command="{Binding DataContext.SelectResultColumnCommand, RelativeSource={RelativeSource AncestorType=controls:MetroWindow}}" 
+                                         CommandParameter="{Binding Text}"/>
+                            <CheckBox IsChecked="{Binding IsChecked}" Content="{Binding Text}" Padding="4" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Grid>
+        <StackPanel Orientation="Horizontal" Grid.Column="1">
+            <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Background="#e3e3e3" />
+        </StackPanel>
+        <Grid Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="30" />
+            </Grid.RowDefinitions>
+            <StackPanel Orientation="Horizontal" Background="AliceBlue">
+                <TextBox Height="30" Margin="10 0 0 0" MinWidth="50" controls:TextBoxHelper.Watermark="Learning rate" Text="{Binding LearningRate}" />
+                <TextBox Height="30" Margin="10 0 0 0" MinWidth="50" controls:TextBoxHelper.Watermark="Desired LMS" Text="{Binding DesiredLms}" />
+                <Button Content="Learn" Height="30" IsEnabled="{Binding IsLearnAllowed}" Padding="10 5" Command="{Binding LearnCommand}" Margin="10 0 0 0" />
+                <Button Content="Calculate" Height="30" IsEnabled="{Binding IsCalculateAllowed}" Padding="10 5" Command="{Binding CalculateCommand}" Margin="10 0 0 0" />
+                <TextBox Height="30" MinWidth="200" Text="{Binding CalculatedResult}" Margin="10 0 0 0" IsReadOnly="True" />
+            </StackPanel>
+            <ItemsControl Grid.Row="1" ItemsSource="{Binding Weights}" Height="Auto" VerticalAlignment="Top">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Columns="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal" Margin="5">
+                            <TextBlock Text="{Binding Name}" Height="20" Margin="0 4 4 0"/>
+                            <TextBox Text="{Binding Value}" Height="20" MinWidth="200" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <ItemsControl Grid.Row="2" ItemsSource="{Binding CustomInputs}" Height="Auto" VerticalAlignment="Top">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Columns="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal" Margin="5">
+                            <TextBlock Text="{Binding Name}" Height="20" Margin="0 4 4 0" />
+                            <TextBox Text="{Binding Value}" Height="20" MinWidth="200" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <Grid Grid.Row="3" >
+                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding MeanSquare, StringFormat={}Mean square: {0}}"/>
+            </Grid>
+        </Grid>
+    </Grid>
+</controls:MetroWindow>

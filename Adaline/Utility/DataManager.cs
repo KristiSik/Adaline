@@ -22,7 +22,8 @@ namespace Adaline.Utility
         /// <param name="resultColumnName">Name of the column in csv file which contains result.</param>
         /// <param name="inputColumnNames">Columns, which should be taken as inputs. If empty, all columns will be taken (except result).</param>
         /// <returns></returns>
-        public static List<InputData> ReadInputData(string filePath, string resultColumnName, params string[] inputColumnNames)
+        public static List<InputData> ReadInputData(string filePath, string resultColumnName,
+            params string[] inputColumnNames)
         {
             if (string.IsNullOrEmpty(filePath))
             {
@@ -52,7 +53,7 @@ namespace Adaline.Utility
 
                 if (inputColumnNames == null || inputColumnNames.Length == 0)
                 {
-                    inputColumnNamesList = columnNames.Except(new [] { resultColumnName }).ToList();
+                    inputColumnNamesList = columnNames.Except(new[] {resultColumnName}).ToList();
                 }
                 else
                 {
@@ -87,15 +88,19 @@ namespace Adaline.Utility
 
                         if (!double.TryParse(values[indexOfColumn], out double value))
                         {
-                            throw new Exception($"Failed to parse value '{values[indexOfColumn]}' of column {c} in {rawIndex} raw.");
+                            throw new Exception(
+                                $"Failed to parse value '{values[indexOfColumn]}' of column {c} in {rawIndex} raw.");
                         }
+
                         inputData.Inputs.Add(value);
                     });
 
                     if (!double.TryParse(values[indexOfResultColumn], out double resValue))
                     {
-                        throw new Exception($"Failed to parse value '{values[indexOfResultColumn]}' of column {resultColumnName} in {rawIndex} raw.");
+                        throw new Exception(
+                            $"Failed to parse value '{values[indexOfResultColumn]}' of column {resultColumnName} in {rawIndex} raw.");
                     }
+
                     inputData.Result = resValue;
                     result.Add(inputData);
 
@@ -104,6 +109,25 @@ namespace Adaline.Utility
             }
 
             return result;
+        }
+
+        public static List<string> ReadColumnNames(string filePath)
+        {
+            if (string.IsNullOrEmpty(filePath))
+            {
+                throw new ArgumentNullException(nameof(filePath));
+            }
+
+            using (var sr = new StreamReader(filePath))
+            {
+                List<string> columnNames = sr.ReadLine()?.Split(DEFAULT_CSV_SEPARATOR).ToList();
+                if (columnNames == null)
+                {
+                    throw new Exception("Can't read column names.");
+                }
+
+                return columnNames;
+            }
         }
     }
 }

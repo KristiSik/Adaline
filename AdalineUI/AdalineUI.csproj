@@ -6,4 +6,22 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="Images\folder.png" />
+    <None Remove="Images\folder.svg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MahApps.Metro" Version="2.0.0-alpha0748" />
+    <PackageReference Include="Prism.Wpf" Version="7.2.0.1422" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Adaline\Adaline.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Images\folder.png" />
+  </ItemGroup>
+
 </Project>
