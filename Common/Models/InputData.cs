@@ -4,7 +4,7 @@
 
 using System.Collections.Generic;
 
-namespace Adaline.Models
+namespace Common.Models
 {
     public class InputData
     {

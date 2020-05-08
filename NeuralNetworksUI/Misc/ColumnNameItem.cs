@@ -1,6 +1,6 @@
 ﻿using Prism.Mvvm;
 
-namespace AdalineUI.Misc
+namespace NeuralNetworksUI.Misc
 {
     public class ColumnNameItem : BindableBase
     {
@@ -13,7 +13,7 @@ namespace AdalineUI.Misc
             get => _isChecked;
             set
             {
-                if (!value && IsResult)
+                if (value && IsResult)
                 {
                     return;
                 }
@@ -29,7 +29,7 @@ namespace AdalineUI.Misc
             {
                 if (value)
                 {
-                    IsChecked = true;
+                    IsChecked = false;
                 }
 
                 _isResult = value;

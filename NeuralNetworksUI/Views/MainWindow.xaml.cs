@@ -1,6 +1,6 @@
-﻿using AdalineUI.ViewModels;
+﻿using NeuralNetworksUI.ViewModels;
 
-namespace AdalineUI.Views
+namespace NeuralNetworksUI.Views
 {
     /// <summary>
     ///     Interaction logic for MainWindow.xaml

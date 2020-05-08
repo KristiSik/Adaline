@@ -1,5 +1,4 @@
-﻿using Adaline.Utility;
-using Microsoft.Win32;
+﻿using Microsoft.Win32;
 using Prism.Commands;
 using Prism.Mvvm;
 using System;
@@ -7,13 +6,16 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using Adaline.Models;
-using AdalineUI.Misc;
+using Common.Models;
+using Common.Utility;
+using NeuralNetworksUI.Misc;
 
-namespace AdalineUI.ViewModels
+namespace NeuralNetworksUI.ViewModels
 {
     public class MainWindowViewModel : BindableBase
     {
@@ -34,6 +36,9 @@ namespace AdalineUI.ViewModels
         private ObservableCollection<DataInfo> _customInputs;
         private int _progressBarMaximum;
         private double _meanSquare;
+        private int _epoch;
+        private string _spentTime;
+        private Stopwatch _stopwatch;
 
         public string LearningRate
         {
@@ -105,6 +110,18 @@ namespace AdalineUI.ViewModels
         {
             get => _meanSquare;
             set => SetProperty(ref _meanSquare, value);
+        }
+
+        public int Epoch
+        {
+            get => _epoch;
+            set => SetProperty(ref _epoch, value);
+        }
+
+        public string SpentTime
+        {
+            get => _spentTime;
+            set => SetProperty(ref _spentTime, value);
         }
 
         public DelegateCommand<string> SelectResultColumnCommand { get; set; }
@@ -204,7 +221,8 @@ namespace AdalineUI.ViewModels
 
             try
             {
-                _inputData = DataManager.ReadInputData(_fullSourceFilePath, GetResultColumnName(), _columnNames.Where(c => c.IsChecked).Select(c => c.Text).ToArray());
+                _inputData = DataManager.ReadInputData(_fullSourceFilePath, GetResultColumnName(), 
+                    _columnNames.Where(c => c.IsChecked).Select(c => c.Text).ToArray());
             }
             catch (Exception ex)
             {
@@ -218,8 +236,17 @@ namespace AdalineUI.ViewModels
             _adaline.EpochFinished += AdalineOnEpochFinished;
             Task.Run(() =>
             {
-                _adaline.Start();
-                IsCalculateAllowed = true;
+                _stopwatch = new Stopwatch();
+                _stopwatch.Start();
+                try
+                {
+                    _adaline.Start();
+                }
+                finally
+                {
+                    IsCalculateAllowed = true;
+                }
+                _stopwatch.Stop();
             });
         }
 
@@ -251,6 +278,8 @@ namespace AdalineUI.ViewModels
             Application.Current.Dispatcher.Invoke(delegate
             {
                 MeanSquare = args.MeanSquare;
+                Epoch = args.Epoch;
+                SpentTime = _stopwatch.Elapsed.ToString();
             });
         }
 

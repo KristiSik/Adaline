@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using Adaline.Models;
-using Adaline.Utility;
+using Common.Models;
+using Common.Utility;
 using Serilog;
 
 namespace Adaline

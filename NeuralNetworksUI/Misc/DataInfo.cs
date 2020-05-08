@@ -4,7 +4,7 @@
 
 using Prism.Mvvm;
 
-namespace AdalineUI.Misc
+namespace NeuralNetworksUI.Misc
 {
     public class DataInfo : BindableBase
     {

@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "Adaline": {
-      "commandName": "Project",
-      "commandLineArgs": "0,001 \"bike sharing.csv\" cnt workingday weekday temp hum"
-    }
-  }
-}

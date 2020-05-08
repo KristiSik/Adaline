@@ -1,4 +1,4 @@
-﻿namespace AdalineUI
+﻿namespace NeuralNetworksUI
 {
     /// <summary>
     ///     Interaction logic for App.xaml

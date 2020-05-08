@@ -1,10 +1,7 @@
-﻿// <copyright file="Adaline.cs" company="Scada International A/S">
-// Copyright (c) Scada International A/S. All rights reserved.
-// </copyright>
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Common.Models;
 using Serilog;
 
 namespace Adaline.Models
@@ -26,7 +23,6 @@ namespace Adaline.Models
         private readonly double _desiredLms;
         private readonly List<double> _weights;
         private readonly List<Node> _nodes;
-        private readonly string[] _tableHeaders;
 
         private int _epochNumber;
 
@@ -55,7 +51,7 @@ namespace Adaline.Models
             {
                 ++_epochNumber;
                 double ms = Iterate();
-                if (Math.Abs(ms - meanSquare) < 1E-10)
+                if (Math.Abs(ms - meanSquare) < 1E-14)
                 {
                     EpochFinished?.Invoke(this, new EpochFinishedEventArgs { Weights = _weights.ToList(), Epoch = _epochNumber, Finished = true, MeanSquare = ms });
                     return;
@@ -83,18 +79,8 @@ namespace Adaline.Models
             return result;
         }
 
-        private void CalculateForInput()
-        {
-            Console.Write("Enter inputs: ");
-            List<double> inputs = Console.ReadLine().Split(" ").Select(s => double.Parse(s)).ToList();
-            Node node = new Node(inputs, 0);
-            var r = node.Calculate(_weights);
-            Console.WriteLine(r);
-        }
-
         private double Iterate()
         {
-            ////PrintStatus();
             ++_epochNumber;
             double meanSquare = GetMeanSquare();
             Log.Information("Epoch {Epoch}, mean square {MeanSquare}.", _epochNumber ,meanSquare);
@@ -104,33 +90,11 @@ namespace Adaline.Models
             return meanSquare;
         }
 
-        public double GetMeanSquare()
-        {
-            return _nodes.Average(n => Math.Pow(n.ExpectedResult - n.Calculate(_weights), 2));
-        }
-
-        ////private string[] GenerateTableHeaders()
-        ////{
-        ////    var result = new List<string>
-        ////    {
-        ////        "Epoch",
-        ////    };
-        ////    result.AddRange(_weights.Select((w, index) => $"W{index}"));
-        ////    return result.ToArray();
-        ////}
+        public double GetMeanSquare() => _nodes.Average(n => Math.Pow(n.ExpectedResult - n.Calculate(_weights), 2));
 
         private List<Node> FormNodes(List<InputData> input)
         {
             return input.Select(i => new Node(i.Inputs, i.Result)).ToList();
         }
-
-        ////private void PrintStatus()
-        ////{
-        ////    Log.Information("Result:");
-        ////    var table = new Table();
-        ////    table.SetHeaders(_tableHeaders);
-        ////    table.AddRow(new [] { _epochNumber.ToString() }.Concat(_weights.Select(w => w.ToString(CultureInfo.InvariantCulture))).ToArray());
-        ////    Console.WriteLine(table.ToString());
-        ////}
     }
 }

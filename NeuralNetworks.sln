@@ -5,7 +5,11 @@ VisualStudioVersion = 16.0.30011.22
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Adaline", "Adaline\Adaline.csproj", "{09B851F3-0B7E-493D-AA21-4117D6B9B9D3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdalineUI", "AdalineUI\AdalineUI.csproj", "{0C12462E-CB4D-4873-8111-229F00B52382}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NeuralNetworksUI", "NeuralNetworksUI\NeuralNetworksUI.csproj", "{0C12462E-CB4D-4873-8111-229F00B52382}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KohonenCards", "KohonenCards\KohonenCards.csproj", "{40AE8D34-6D53-418B-9DC8-198A07CF4E0F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{14AAC699-A686-46ED-B613-E5CF4D86DADC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +25,14 @@ Global
 		{0C12462E-CB4D-4873-8111-229F00B52382}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0C12462E-CB4D-4873-8111-229F00B52382}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0C12462E-CB4D-4873-8111-229F00B52382}.Release|Any CPU.Build.0 = Release|Any CPU
+		{40AE8D34-6D53-418B-9DC8-198A07CF4E0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{40AE8D34-6D53-418B-9DC8-198A07CF4E0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{40AE8D34-6D53-418B-9DC8-198A07CF4E0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{40AE8D34-6D53-418B-9DC8-198A07CF4E0F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{14AAC699-A686-46ED-B613-E5CF4D86DADC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{14AAC699-A686-46ED-B613-E5CF4D86DADC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{14AAC699-A686-46ED-B613-E5CF4D86DADC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14AAC699-A686-46ED-B613-E5CF4D86DADC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

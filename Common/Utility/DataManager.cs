@@ -6,14 +6,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Adaline.Models;
-using Serilog;
+using Common.Models;
 
-namespace Adaline.Utility
+namespace Common.Utility
 {
     public static class DataManager
     {
-        private const string DEFAULT_CSV_SEPARATOR = ";";
+        private const char DEFAULT_CSV_SEPARATOR = ';';
 
         /// <summary>
         ///     Read data from csv file and convert that into list of <see cref="InputData"/> objects.

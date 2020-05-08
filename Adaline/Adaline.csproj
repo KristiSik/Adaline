@@ -11,6 +11,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Common\Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="ConsoleTable">
       <HintPath>..\Libs\ConsoleTable.dll</HintPath>
     </Reference>
