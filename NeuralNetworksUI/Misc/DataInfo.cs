@@ -1,8 +1,4 @@
-﻿// <copyright file="DataInfo.cs" company="Scada International A/S">
-// Copyright (c) Scada International A/S. All rights reserved.
-// </copyright>
-
-using Prism.Mvvm;
+﻿using Prism.Mvvm;
 
 namespace NeuralNetworksUI.Misc
 {

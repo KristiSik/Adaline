@@ -4,8 +4,8 @@ namespace NeuralNetworksUI.Misc
 {
     public class ColumnNameItem : BindableBase
     {
-        private bool _isResult;
         private bool _isChecked;
+        private bool _isResult;
         public string Text { get; set; }
 
         public bool IsChecked
@@ -13,10 +13,7 @@ namespace NeuralNetworksUI.Misc
             get => _isChecked;
             set
             {
-                if (value && IsResult)
-                {
-                    return;
-                }
+                if (value && IsResult) return;
 
                 SetProperty(ref _isChecked, value);
             }
@@ -27,10 +24,7 @@ namespace NeuralNetworksUI.Misc
             get => _isResult;
             set
             {
-                if (value)
-                {
-                    IsChecked = false;
-                }
+                if (value) IsChecked = false;
 
                 _isResult = value;
             }

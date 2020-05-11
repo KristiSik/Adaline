@@ -1,6 +1,4 @@
-﻿using NeuralNetworksUI.ViewModels;
-
-namespace NeuralNetworksUI.Views
+﻿namespace NeuralNetworksUI.Views
 {
     /// <summary>
     ///     Interaction logic for MainWindow.xaml
@@ -10,7 +8,6 @@ namespace NeuralNetworksUI.Views
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new MainWindowViewModel();
         }
     }
 }

@@ -1,7 +1,4 @@
-﻿using Microsoft.Win32;
-using Prism.Commands;
-using Prism.Mvvm;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -13,32 +10,50 @@ using System.Windows;
 using Adaline.Models;
 using Common.Models;
 using Common.Utility;
+using Microsoft.Win32;
 using NeuralNetworksUI.Misc;
+using Prism.Commands;
+using Prism.Mvvm;
+using Prism.Regions;
 
 namespace NeuralNetworksUI.ViewModels
 {
-    public class MainWindowViewModel : BindableBase
+    public class AdalineViewModel : BindableBase
     {
-        private string _sourceFilePath;
-        private string _fullSourceFilePath;
+        private readonly IRegionManager _regionManager;
+        private Adaline.Models.Adaline _adaline;
+        private double _calculatedResult;
         private ObservableCollection<ColumnNameItem> _columnNames;
-        private ObservableCollection<DataInfo> _weights;
-        private bool _isLearnAllowed;
-        private bool _isCalculateAllowed;
-        private global::Adaline.Models.Adaline _adaline;
-        private string _learningRate = "0,1";
-        private double _learningRateDouble;
+        private ObservableCollection<DataInfo> _customInputs;
         private string _desiredLms = "1";
         private double _desiredLmsDouble;
-        private List<InputData> _inputData;
-        private int _progressBarValue;
-        private double _calculatedResult;
-        private ObservableCollection<DataInfo> _customInputs;
-        private int _progressBarMaximum;
-        private double _meanSquare;
         private int _epoch;
+        private string _fullSourceFilePath;
+        private List<InputData> _inputData;
+        private bool _isCalculateAllowed;
+        private bool _isLearnAllowed;
+        private string _learningRate = "0,1";
+        private double _learningRateDouble;
+        private double _meanSquare;
+        private int _progressBarMaximum;
+        private int _progressBarValue;
+        private string _sourceFilePath;
         private string _spentTime;
         private Stopwatch _stopwatch;
+        private ObservableCollection<DataInfo> _weights;
+
+        public AdalineViewModel(IRegionManager regionManager)
+        {
+            _regionManager = regionManager;
+            SelectFileCommand = new DelegateCommand(ExecuteSelectFileCommand);
+            SelectResultColumnCommand = new DelegateCommand<string>(ExecuteSelectResultColumnCommand);
+            LearnCommand = new DelegateCommand(ExecuteLearnCommand);
+            CalculateCommand = new DelegateCommand(ExecuteCalculateCommand);
+            ColumnNames = new ObservableCollection<ColumnNameItem>();
+            Weights = new ObservableCollection<DataInfo>();
+            CustomInputs = new ObservableCollection<DataInfo>();
+            ColumnNames.CollectionChanged += ColumnNamesOnCollectionChanged;
+        }
 
         public string LearningRate
         {
@@ -49,11 +64,11 @@ namespace NeuralNetworksUI.ViewModels
         public string DesiredLms
         {
             get => _desiredLms;
-            set =>  SetProperty(ref _desiredLms, value);
+            set => SetProperty(ref _desiredLms, value);
         }
 
-        public string SourceFilePath 
-        { 
+        public string SourceFilePath
+        {
             get => _sourceFilePath;
             set => SetProperty(ref _sourceFilePath, value);
         }
@@ -132,35 +147,15 @@ namespace NeuralNetworksUI.ViewModels
 
         public DelegateCommand CalculateCommand { get; set; }
 
-        public MainWindowViewModel()
-        {
-            SelectFileCommand = new DelegateCommand(ExecuteSelectFileCommand);
-            SelectResultColumnCommand = new DelegateCommand<string>(ExecuteSelectResultColumnCommand);
-            LearnCommand = new DelegateCommand(ExecuteLearnCommand);
-            CalculateCommand = new DelegateCommand(ExecuteCalculateCommand);
-            ColumnNames = new ObservableCollection<ColumnNameItem>();
-            Weights = new ObservableCollection<DataInfo>();
-            CustomInputs = new ObservableCollection<DataInfo>();
-            ColumnNames.CollectionChanged += ColumnNamesOnCollectionChanged;
-        }
-
         private void ColumnNamesOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (e.Action == NotifyCollectionChangedAction.Add)
-            {
                 foreach (var eNewItem in e.NewItems)
-                {
                     ((ColumnNameItem) eNewItem).PropertyChanged += OnPropertyChanged;
-                }
-            }
 
             if (e.Action == NotifyCollectionChangedAction.Remove)
-            {
                 foreach (var eOldItem in e.OldItems)
-                {
-                    ((ColumnNameItem)eOldItem).PropertyChanged -= OnPropertyChanged;
-                }
-            }
+                    ((ColumnNameItem) eOldItem).PropertyChanged -= OnPropertyChanged;
         }
 
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -170,12 +165,12 @@ namespace NeuralNetworksUI.ViewModels
                 Weights.Clear();
                 Weights.AddRange(ColumnNames.Where(c => c.IsChecked).Select((c, index) => new DataInfo
                 {
-                    Name = $"w{index}",
+                    Name = $"w{index}"
                 }));
                 CustomInputs.Clear();
                 CustomInputs.AddRange(ColumnNames.Where(c => c.IsChecked).Select((c, index) => new DataInfo
                 {
-                    Name = $"x{index}",
+                    Name = $"x{index}"
                 }));
             }
         }
@@ -213,6 +208,7 @@ namespace NeuralNetworksUI.ViewModels
                 MessageBox.Show("Learning rate is appropriate. Use ',' to separate decimals.");
                 return;
             }
+
             if (!double.TryParse(_desiredLms, out _desiredLmsDouble))
             {
                 MessageBox.Show("Desired LMS is appropriate.");
@@ -221,7 +217,7 @@ namespace NeuralNetworksUI.ViewModels
 
             try
             {
-                _inputData = DataManager.ReadInputData(_fullSourceFilePath, GetResultColumnName(), 
+                _inputData = DataManager.ReadInputData(_fullSourceFilePath, GetResultColumnName(),
                     _columnNames.Where(c => c.IsChecked).Select(c => c.Text).ToArray());
             }
             catch (Exception ex)
@@ -246,6 +242,7 @@ namespace NeuralNetworksUI.ViewModels
                 {
                     IsCalculateAllowed = true;
                 }
+
                 _stopwatch.Stop();
             });
         }
@@ -253,27 +250,18 @@ namespace NeuralNetworksUI.ViewModels
         private void AdalineOnEpochFinished(object sender, EpochFinishedEventArgs args)
         {
             if (Weights.Count != args.Weights.Count)
-            {
                 Application.Current.Dispatcher.Invoke(delegate
                 {
                     Weights.Clear();
                     Weights.AddRange(args.Weights.Select((w, index) => new DataInfo
                     {
                         Name = $"w{index}",
-                        Value = w,
+                        Value = w
                     }));
                 });
-            }
             else
-            {
                 for (var i = 0; i < args.Weights.Count; i++)
-                {
-                    Application.Current.Dispatcher.Invoke(delegate
-                    {
-                        Weights[i].Value = args.Weights[i];
-                    });
-                }
-            }
+                    Application.Current.Dispatcher.Invoke(delegate { Weights[i].Value = args.Weights[i]; });
 
             Application.Current.Dispatcher.Invoke(delegate
             {
@@ -283,12 +271,12 @@ namespace NeuralNetworksUI.ViewModels
             });
         }
 
-        string GetResultColumnName()
+        private string GetResultColumnName()
         {
             return _columnNames.First(c => c.IsResult).Text;
         }
 
-        void ExecuteSelectFileCommand()
+        private void ExecuteSelectFileCommand()
         {
             var openFileDialog = new OpenFileDialog
             {
@@ -314,13 +302,10 @@ namespace NeuralNetworksUI.ViewModels
             }
         }
 
-        void ExecuteSelectResultColumnCommand(string columnName)
+        private void ExecuteSelectResultColumnCommand(string columnName)
         {
-            ColumnNameItem item = ColumnNames.FirstOrDefault(c => c.Text == columnName);
-            foreach (var columnNameItem in ColumnNames)
-            {
-                columnNameItem.IsResult = false;
-            }
+            var item = ColumnNames.FirstOrDefault(c => c.Text == columnName);
+            foreach (var columnNameItem in ColumnNames) columnNameItem.IsResult = false;
 
             item.IsResult = true;
             IsLearnAllowed = true;
