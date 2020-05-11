@@ -31,7 +31,7 @@ namespace NeuralNetworksUI.ViewModels
                     break;
 
                 case "KohonenCards":
-                    _regionManager.RequestNavigate("NeuralNetwork", typeof(KohonenCards).Name);
+                    _regionManager.RequestNavigate("NeuralNetwork", typeof(Views.KohonenCards).Name);
                     break;
 
                 default:

@@ -19,15 +19,18 @@ namespace KohonenCards
         private readonly List<Layer> _layers;
         private readonly int _kohonenCardWidth;
         private readonly int _kohonenCardHeight;
-        private readonly double _learningRateCoefficientA;
-        private readonly double _learningRateCoefficientB;
+        private readonly double _learningRateConstA;
+        private readonly double _learningRateConstB;
         private readonly double _initialNeighborhoodParameter;
+
+        public IReadOnlyList<KohonenLayerNeuron> KohonenLayerNeurons =>
+            _layers[1].Neurons.OfType<KohonenLayerNeuron>().ToList();
 
         public KohonenCardNeuralNetwork(
             int kohonenCardWidth,
             int kohonenCardHeight,
-            double learningRateCoefficientA,
-            double learningRateCoefficientB,
+            double learningRateConstA,
+            double learningRateConstB,
             double initialNeighborhoodParameter,
             ILogger logger)
         {
@@ -35,25 +38,32 @@ namespace KohonenCards
 
             _kohonenCardWidth = kohonenCardWidth;
             _kohonenCardHeight = kohonenCardHeight;
-            _learningRateCoefficientA = learningRateCoefficientA;
-            _learningRateCoefficientB = learningRateCoefficientB;
+            _learningRateConstA = learningRateConstA;
+            _learningRateConstB = learningRateConstB;
             _initialNeighborhoodParameter = initialNeighborhoodParameter;
 
             _layers = new List<Layer>();
         }
 
-        public Task Learn(List<InputData> learnData)
+        public object InputDataProcessed { get; set; }
+
+        public Task<List<InputDataResult>> Learn(List<InputData> learnData)
         {
             _logger.Information("Started learning. Test data has {NumberOfRecords} records.", learnData.Count);
 
+            var result = new List<InputDataResult>();
             var sw = new Stopwatch();
             sw.Start();
+
+            // initialize weights
+            _layers[1].Neurons.ForEach(n => learnData[0].Inputs.ForEach(n.Weights.Add));
 
             int dataSize = learnData.Count;
 
             for (int iteration = 0; iteration < learnData.Count; iteration++)
             {
                 InputData inputData = learnData[iteration];
+
                 // setting input values
                 for (int i = 0; i < inputData.Inputs.Count; i++)
                 {
@@ -75,6 +85,7 @@ namespace KohonenCards
                 }
 
                 KohonenLayerNeuron winner = _layers[1].Neurons[indexOfMinDistanceNeuron] as KohonenLayerNeuron;
+                result.Add(new InputDataResult(inputData, winner));
 
                 double neighborhoodRadius = NeighborhoodRadius(iteration, dataSize);
                 double learningRate = LearningRate(iteration);
@@ -95,14 +106,14 @@ namespace KohonenCards
 
             _logger.Information("Learning finished in {TimeElapsed}.", sw.Elapsed);
 
-            return Task.CompletedTask;
+            return Task.FromResult(result);
         }
 
         /// <summary>
         ///     Initializes two layers in neural network and neurons inside.
         /// </summary>
         /// <param name="dataDimension">Number of attributes each vector has. Affects number of neurons in first (distributive) layer.</param>
-        public void InitializeLayers(int dataDimension)
+        public List<KohonenLayerNeuron> InitializeLayers(int dataDimension)
         {
             // initializing neurons in distributive (first) layer
             var firstLayer = new Layer();
@@ -113,8 +124,8 @@ namespace KohonenCards
 
             // initializing neurons in Kohonen (second) layer
             var secondLayer = new Layer();
-            int x = 0;
-            int y = 0;
+            int x = 1;
+            int y = 1;
             for (int i = 0; i < _kohonenCardWidth * _kohonenCardHeight; i++)
             {
                 var neuron = new KohonenLayerNeuron(x, y);
@@ -127,7 +138,7 @@ namespace KohonenCards
                     neuronFromFirstLayer.OutputSignals.Add(signal);
                 }
 
-                neuron.InitializeRandomWeights(firstLayer.Neurons.Count);
+                ////neuron.InitializeRandomWeights(firstLayer.Neurons.Count);
 
                 secondLayer.Neurons.Add(neuron);
 
@@ -136,6 +147,8 @@ namespace KohonenCards
                     y = 0;
                     x++;
                 }
+
+                y++;
             }
 
             _layers.Add(firstLayer);
@@ -145,10 +158,12 @@ namespace KohonenCards
                 "Initialized 2 layers: distributive ({NeuronsInFirstLayer} neurons) and Kohonen ({NeuronsInKohonenLayer} neurons).",
                 dataDimension,
                 _kohonenCardHeight * _kohonenCardWidth);
+
+            return _layers[1].Neurons.OfType<KohonenLayerNeuron>().ToList();
         }
 
         private double LearningRate(int iteration) =>
-            _learningRateCoefficientA / (_learningRateCoefficientB + iteration);
+            _learningRateConstA / (_learningRateConstB + iteration);
 
         private double NeighborhoodRadius(int iteration, int totalIterations) =>
             _initialNeighborhoodParameter / (1 + (double)iteration / totalIterations);

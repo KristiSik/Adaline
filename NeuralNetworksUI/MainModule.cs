@@ -19,7 +19,7 @@ namespace NeuralNetworksUI
         {
             containerRegistry.GetContainer().RegisterTypeForNavigation<NetworksList>();
             containerRegistry.GetContainer().RegisterTypeForNavigation<Views.Adaline>();
-            containerRegistry.GetContainer().RegisterTypeForNavigation<KohonenCards>();
+            containerRegistry.GetContainer().RegisterTypeForNavigation<Views.KohonenCards>();
         }
 
         public void OnInitialized(IContainerProvider containerProvider)

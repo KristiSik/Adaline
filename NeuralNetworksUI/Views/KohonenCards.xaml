@@ -2,44 +2,90 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:prism="http://prismlibrary.com/"
-             xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:oxy="http://oxyplot.org/wpf"
              prism:ViewModelLocator.AutoWireViewModel="True">
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="50" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="30" />
-        </Grid.RowDefinitions>
-        <StackPanel Orientation="Horizontal" Background="AliceBlue">
-            <TextBox Height="30" Margin="10 0 0 0" MinWidth="50" mah:TextBoxHelper.Watermark="Learning rate"
-                     Text="{Binding LearningRate}" />
-            <TextBox Height="30" Margin="10 0 0 0" MinWidth="50" mah:TextBoxHelper.Watermark="Desired LMS"
-                     Text="{Binding DesiredLms}" />
-            <Button Content="Learn" Height="30" IsEnabled="{Binding IsLearnAllowed}" Padding="10 5"
-                    Command="{Binding LearnCommand}" Margin="10 0 0 0" />
-            <Button Content="Calculate" Height="30" IsEnabled="{Binding IsCalculateAllowed}" Padding="10 5"
-                    Command="{Binding CalculateCommand}" Margin="10 0 0 0" />
-            <TextBox Height="30" MinWidth="200" Text="{Binding CalculatedResult}" Margin="10 0 0 0" IsReadOnly="True" />
-        </StackPanel>
-        <Grid Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="397*" />
-                <ColumnDefinition Width="155*" />
-            </Grid.ColumnDefinitions>
-            <oxy:PlotView Model="{Binding Model}" Grid.ColumnSpan="2" />
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="240" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Column="0" Margin="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBox IsReadOnly="True" Style="{DynamicResource MahApps.Styles.TextBox.Button}" Grid.Column="0"
+                         Text="{Binding SourceFilePath}"
+                         controls:TextBoxHelper.ButtonCommand="{Binding SelectFileCommand}">
+                    <controls:TextBoxHelper.ButtonContent>
+                        <Image Source="../Images/folder.png" Margin="3" />
+                    </controls:TextBoxHelper.ButtonContent>
+                </TextBox>
+            </Grid>
+            <ItemsControl Grid.Row="1" ItemsSource="{Binding ColumnNames}" Margin="0 10 0 0">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <CheckBox IsChecked="{Binding IsChecked}" Content="{Binding Text}" Padding="4" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
         </Grid>
-        <Grid Grid.Row="3">
-            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">
-                <TextBlock.Text>
-                    <MultiBinding StringFormat="{}Mean square {0}, epoch {1}, spent time {2}">
-                        <Binding Path="MeanSquare" />
-                        <Binding Path="Epoch" />
-                        <Binding Path="SpentTime" />
-                    </MultiBinding>
-                </TextBlock.Text>
-            </TextBlock>
+        <StackPanel Orientation="Horizontal" Grid.Column="1">
+            <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Background="#e3e3e3" />
+        </StackPanel>
+        <Grid Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="30" />
+            </Grid.RowDefinitions>
+            <StackPanel Orientation="Horizontal" Background="AliceBlue">
+                <TextBox Height="30" Margin="10 0 0 0" MinWidth="50" controls:TextBoxHelper.Watermark="Neigh. param."
+                     Text="{Binding InitialNeighborhoodParameter}" />
+                <TextBox Height="30" Margin="10 0 0 0" MinWidth="50" controls:TextBoxHelper.Watermark="Card width"
+                     Text="{Binding CardWidth}" />
+                <TextBox Height="30" Margin="10 0 0 0" MinWidth="50" controls:TextBoxHelper.Watermark="Card height"
+                     Text="{Binding CardHeight}" />
+                <TextBox Height="30" Margin="10 0 0 0" MinWidth="50" controls:TextBoxHelper.Watermark="L.r. const A"
+                     Text="{Binding LearningRateConstA}" />
+                <TextBox Height="30" Margin="10 0 0 0" MinWidth="50" controls:TextBoxHelper.Watermark="L.r. const B"
+                     Text="{Binding LearningRateConstB}" />
+                <TextBox Height="30" Margin="10 0 0 0" MinWidth="50" controls:TextBoxHelper.Watermark="Clusters"
+                         Text="{Binding NumberOfClusters}" />
+                <Button Content="Learn" Height="30" IsEnabled="{Binding IsLearnAllowed}" Padding="10 5"
+                    Command="{Binding LearnCommand}" Margin="10 0 0 0" />
+                <Button Content="Calculate" Height="30" IsEnabled="{Binding IsCalculateAllowed}" Padding="10 5"
+                    Command="{Binding CalculateCommand}" Margin="10 0 0 0" />
+                <TextBox Height="30" MinWidth="180" Text="{Binding CalculatedResult}" Margin="10 0 0 0" IsReadOnly="True" />
+            </StackPanel>
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="397*" />
+                    <ColumnDefinition Width="155*" />
+                </Grid.ColumnDefinitions>
+                <oxy:PlotView Model="{Binding Model}" Grid.ColumnSpan="2" />
+            </Grid>
+            <Grid Grid.Row="3">
+                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <TextBlock.Text>
+                        <MultiBinding StringFormat="{}Mean square {0}, epoch {1}, spent time {2}">
+                            <Binding Path="MeanSquare" />
+                            <Binding Path="Epoch" />
+                            <Binding Path="SpentTime" />
+                        </MultiBinding>
+                    </TextBlock.Text>
+                </TextBlock>
+            </Grid>
         </Grid>
     </Grid>
 </UserControl>
