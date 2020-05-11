@@ -2,9 +2,10 @@
 // Copyright (c) Scada International A/S. All rights reserved.
 // </copyright>
 
+using System;
 using System.Collections.Generic;
 
-namespace KohonenCards
+namespace KohonenCards.Models
 {
     public class KohonenLayerNeuron : Neuron
     {
@@ -12,13 +13,19 @@ namespace KohonenCards
         {
             Position = new Point(posX, posY);
             Weights = new List<double>();
+            InputSignals = new List<Signal>();
         }
 
         public Point Position { get; set; }
 
-        public override void GenerateOutputSignals()
+        public override void FeedForward()
         {
             throw new System.NotImplementedException();
+        }
+
+        public double DistanceToNeuron(KohonenLayerNeuron neuron)
+        {
+            return Math.Sqrt(Math.Pow(Position.X, neuron.Position.X) + Math.Pow(Position.Y, neuron.Position.Y));
         }
     }
 }

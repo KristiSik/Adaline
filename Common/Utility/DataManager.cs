@@ -29,11 +29,6 @@ namespace Common.Utility
                 throw new ArgumentNullException(nameof(filePath));
             }
 
-            if (string.IsNullOrEmpty(resultColumnName))
-            {
-                throw new ArgumentNullException(nameof(resultColumnName));
-            }
-
             var result = new List<InputData>();
             List<string> inputColumnNamesList = new List<string>();
             using (var sr = new StreamReader(filePath))
@@ -44,10 +39,14 @@ namespace Common.Utility
                     throw new Exception("Can't read column names.");
                 }
 
-                int indexOfResultColumn = columnNames.IndexOf(resultColumnName);
-                if (indexOfResultColumn < 0)
+                int indexOfResultColumn = 0;
+                if (resultColumnName != null)
                 {
-                    throw new Exception($"Result column '{resultColumnName}' is not present in the list of columns.");
+                    indexOfResultColumn = columnNames.IndexOf(resultColumnName);
+                    if (indexOfResultColumn < 0)
+                    {
+                        throw new Exception($"Result column '{resultColumnName}' is not present in the list of columns.");
+                    }
                 }
 
                 if (inputColumnNames == null || inputColumnNames.Length == 0)
@@ -94,13 +93,16 @@ namespace Common.Utility
                         inputData.Inputs.Add(value);
                     });
 
-                    if (!double.TryParse(values[indexOfResultColumn], out double resValue))
+                    if (resultColumnName != null)
                     {
-                        throw new Exception(
-                            $"Failed to parse value '{values[indexOfResultColumn]}' of column {resultColumnName} in {rawIndex} raw.");
+                        if (!double.TryParse(values[indexOfResultColumn], out double resValue))
+                        {
+                            throw new Exception(
+                                $"Failed to parse value '{values[indexOfResultColumn]}' of column {resultColumnName} in {rawIndex} raw.");
+                        }
+                        inputData.Result = resValue;
                     }
 
-                    inputData.Result = resValue;
                     result.Add(inputData);
 
                     ++rawIndex;

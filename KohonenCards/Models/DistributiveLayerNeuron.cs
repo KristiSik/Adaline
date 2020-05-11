@@ -5,7 +5,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace KohonenCards
+namespace KohonenCards.Models
 {
     public class DistributiveLayerNeuron : Neuron
     {
@@ -15,9 +15,13 @@ namespace KohonenCards
             {
                 1,
             };
+            InputSignals = new List<Signal>
+            {
+                new Signal(),
+            };
         }
 
-        public override void GenerateOutputSignals()
+        public override void FeedForward()
         {
             if (Weights.Count != InputSignals.Count)
             {

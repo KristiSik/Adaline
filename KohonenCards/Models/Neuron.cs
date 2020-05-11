@@ -5,23 +5,32 @@
 using System;
 using System.Collections.Generic;
 
-namespace KohonenCards
+namespace KohonenCards.Models
 {
     public abstract class Neuron
     {
         protected Neuron()
         {
-            InputSignals = new List<Signal>();
             OutputSignals = new List<Signal>();
         }
 
-        public List<double> Weights { get; set; }
+        public List<double> Weights { get; protected set; }
 
-        public List<Signal> InputSignals { get; set; }
+        public List<Signal> InputSignals { get; protected set; }
 
-        public List<Signal> OutputSignals { get; set; }
+        public List<Signal> OutputSignals { get; protected set; }
 
-        public abstract void GenerateOutputSignals();
+        public abstract void FeedForward();
+
+        public void InitializeRandomWeights(int numberOfWeights)
+        {
+            Random rnd = new Random();
+            Weights.Clear();
+            for (int i = 0; i < numberOfWeights; i++)
+            {
+                Weights.Add(rnd.NextDouble());
+            }
+        }
 
         public double DistanceToWeightVector(List<double> weights)
         {
@@ -39,11 +48,6 @@ namespace KohonenCards
 
             result = Math.Sqrt(result);
             return result;
-        }
-
-        public double DistanceToNeuron(Neuron neuron)
-        {
-            return DistanceToWeightVector(neuron.Weights);
         }
     }
 }

@@ -2,7 +2,7 @@
 // Copyright (c) Scada International A/S. All rights reserved.
 // </copyright>
 
-namespace KohonenCards
+namespace KohonenCards.Models
 {
     public class Point
     {
