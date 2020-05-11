@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using Common.Utility;
 
 namespace KohonenCards.Models
 {

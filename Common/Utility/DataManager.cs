@@ -130,5 +130,17 @@ namespace Common.Utility
                 return columnNames;
             }
         }
+
+        public static void WriteData(string filepath, string[] columnNames, List<InputData> data)
+        {
+            using (var sw = new StreamWriter(filepath))
+            {
+                sw.WriteLine(string.Join(DEFAULT_CSV_SEPARATOR.ToString(), columnNames));
+                foreach (var inputData in data)
+                {
+                    sw.WriteLine(string.Join(DEFAULT_CSV_SEPARATOR.ToString(), inputData.Inputs));
+                }
+            }
+        }
     }
 }

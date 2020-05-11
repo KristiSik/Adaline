@@ -2,12 +2,16 @@
 // Copyright (c) Scada International A/S. All rights reserved.
 // </copyright>
 
+using Common.Utility;
+
 namespace KohonenCards.Models
 {
     public class Point
     {
+        [KMeansValue]
         public int X { get; set; }
 
+        [KMeansValue]
         public int Y { get; set; }
 
         public Point()

@@ -9,7 +9,7 @@ using Serilog;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
+using Common.Utility;
 
 namespace KohonenCards
 {
@@ -45,9 +45,7 @@ namespace KohonenCards
             _layers = new List<Layer>();
         }
 
-        public object InputDataProcessed { get; set; }
-
-        public Task<List<InputDataResult>> Learn(List<InputData> learnData)
+        public List<InputDataResult> Learn(List<InputData> learnData)
         {
             _logger.Information("Started learning. Test data has {NumberOfRecords} records.", learnData.Count);
 
@@ -106,7 +104,69 @@ namespace KohonenCards
 
             _logger.Information("Learning finished in {TimeElapsed}.", sw.Elapsed);
 
-            return Task.FromResult(result);
+            return result;
+        }
+
+        public List<Cluster> Cluster(List<InputData> dataToCluster, int numberOfClusters)
+        {
+            Dictionary<KohonenLayerNeuron, List<InputData>> neuronsInputData = new Dictionary<KohonenLayerNeuron, List<InputData>>();
+            foreach (var inputData in dataToCluster)
+            {
+                for (int i = 0; i < inputData.Inputs.Count; i++)
+                {
+                    _layers[0].Neurons[i].InputSignals[0].Value = inputData.Inputs[i];
+                    _layers[0].Neurons[i].FeedForward();
+                }
+
+                double minDistance = double.MaxValue;
+                int indexOfMinDistanceNeuron = 0;
+
+                for (int i = 0; i < _layers[1].Neurons.Count; i++)
+                {
+                    double distanceToNeuron = _layers[1].Neurons[i].DistanceToWeightVector(inputData.Inputs);
+                    if (distanceToNeuron < minDistance)
+                    {
+                        minDistance = distanceToNeuron;
+                        indexOfMinDistanceNeuron = i;
+                    }
+                }
+
+                KohonenLayerNeuron winner = _layers[1].Neurons[indexOfMinDistanceNeuron] as KohonenLayerNeuron;
+                if (!neuronsInputData.ContainsKey(winner))
+                {
+                    neuronsInputData[winner] = new List<InputData>();
+                }
+                neuronsInputData[winner].Add(inputData);
+            }
+
+            var kMeansResult = KMeans.Cluster(neuronsInputData.Keys.Select(k => k.Position).ToArray(), numberOfClusters, 30,
+                delegate(double[] point, double[] centroid)
+                {
+                    // calculating Euclidean distance
+                     double res = 0;
+                    for (int i = 0; i < point.Length; i++)
+                    {
+                        res += Math.Pow(point[i] - centroid[i], 2);
+                    }
+
+                    res = Math.Sqrt(res);
+                    return res;
+                });
+
+            var result = new List<Cluster>();
+            foreach (var positions in kMeansResult.Clusters)
+            {
+                var res = new List<InputDataResult>();
+                foreach (var position in positions)
+                {
+                    KohonenLayerNeuron kohonenLayerNeuron =
+                        neuronsInputData.Keys.FirstOrDefault(k => k.Position == position);
+                    res.AddRange(neuronsInputData[kohonenLayerNeuron].Select(e => new InputDataResult(e, kohonenLayerNeuron)));
+                }
+                result.Add(new Cluster { InputDataResults = res });
+            }
+
+            return result;
         }
 
         /// <summary>
