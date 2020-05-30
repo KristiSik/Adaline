@@ -1,8 +1,4 @@
-﻿// <copyright file="KohonenCardNeuralNetwork.cs" company="Scada International A/S">
-// Copyright (c) Scada International A/S. All rights reserved.
-// </copyright>
-
-using System;
+﻿using System;
 using Common.Models;
 using KohonenCards.Models;
 using Serilog;
