@@ -8,7 +8,7 @@ namespace RBFNetwork
     {
         private static void Main(string[] args)
         {
-            Console.WriteLine("\nBegin radial basis function (RBF) network training demo\n");
+            Console.WriteLine("\nBegin radial basis function (RBF) network training\n");
             Console.WriteLine("Goal is to train an RBF network on iris flower data to predict");
             Console.WriteLine("species from sepal length and width, and petal length and width.");
 
@@ -56,24 +56,15 @@ namespace RBFNetwork
             ////});
             ////DataManager.WriteData("res.csv", s.ToArray(), inputData);
 
-            // (0,0,1) = Iris setosa; (0,1,0) = Iris versicolor; (1,0,0) = Iris virginica
-            // program assumes x-data precedes y-data
-
             var allData = inputData.Select(c => c.Inputs.Select(i => i).ToArray()).ToArray();
 
             Console.WriteLine("\nFirst four and last line of normalized, encoded input data:\n");
-            ////Helpers.ShowMatrix(allData, 4, 3, true, true);
 
             Console.WriteLine("\nSplitting data into 80%-20% train and test sets");
             double[][] trainData = null;
             double[][] testData = null;
-            var seed = 8; // gives a good demo
+            var seed = 8;
             GetTrainTest(allData, seed, out trainData, out testData); // 80-20 hold-out 
-
-            ////Console.WriteLine("\nTraining data: \n");
-            ////Helpers.ShowMatrix(trainData, trainData.Length, 3, true, false);
-            ////Console.WriteLine("\nTest data:\n");
-            ////Helpers.ShowMatrix(testData, testData.Length, 3, true, false);
 
             Console.WriteLine("\nCreating a 9-6-28 radial basis function network");
             var numInput = 9;
@@ -82,7 +73,7 @@ namespace RBFNetwork
             var rn = new RadialNetwork(numInput, numHidden, numOutput);
 
             Console.WriteLine("\nBeginning RBF training\n");
-            var maxIterations = 200; // max for PSO 
+            var maxIterations = 200;
             var bestWeights = rn.Train(trainData, maxIterations);
 
             Console.WriteLine("\nEvaluating result RBF classification accuracy on the test data");
@@ -99,7 +90,7 @@ namespace RBFNetwork
 
             DataManager.WriteData("res.csv", s.ToArray(), inputData);
 
-            Console.WriteLine("\nEnd RBF network training demo\n");
+            Console.WriteLine("\nEnd RBF network training\n");
             Console.ReadLine();
         } // Main()
 
